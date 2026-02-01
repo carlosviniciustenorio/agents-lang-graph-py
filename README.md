@@ -1,161 +1,157 @@
-# IA Agent com LangGraph, MCP, RAG e Observabilidade
+# AI Agent with LangGraph, MCP, RAG, and Observability 🔧
 
-Este projeto demonstra como construir um **agente de IA produtivo**
-usando:
+This project demonstrates how to build a **productive AI agent** using:
 
--   **LangGraph** para orquestração de estados.
--   **Ollama + Mistral** como LLM local.
--   **MCP (Model Context Protocol)** para descoberta e execução de
-    ferramentas.
--   **RAG com FAISS + SentenceTransformers**.
--   **FastAPI** como MCP Server.
--   **Langfuse** para observabilidade local.
+- **LangGraph** for state orchestration.
+- **Ollama + Mistral** as a local LLM.
+- **MCP (Model Context Protocol)** for tool discovery and execution.
+- **RAG with FAISS + SentenceTransformers**.
+- **FastAPI** as the MCP Server.
+- **Langfuse** for local observability.
 
-O objetivo é sair do modelo de chatbot e entrar em **engenharia de
-agentes**, onde a IA planeja, decide, executa ações reais e valida
-resultados.
+The goal is to move beyond chatbots into **agent engineering**, where the AI plans, decides, executes real actions, and validates results.
 
-------------------------------------------------------------------------
+---
 
-## Visão Geral
+## Overview
 
-O agente executa o seguinte fluxo:
+The agent follows this flow:
 
-1.  **Perception** -- entende a intenção do usuário.\
-2.  **Planner** -- cria um plano curto de ação.\
-3.  **Tool Discovery** -- escolhe ferramentas via MCP.\
-4.  **Executor** -- executa RAG ou chama APIs externas.\
-5.  **Validator** -- valida se a resposta resolve o pedido.\
-6.  **Retry / End** -- controla convergência.
+1. **Perception** — understands the user's intent.
+2. **Planner** — creates a short action plan.
+3. **Tool Discovery** — selects tools via MCP.
+4. **Executor** — runs RAG or calls external APIs.
+5. **Validator** — verifies whether the response resolves the request.
+6. **Retry / End** — manages convergence.
 
-------------------------------------------------------------------------
+---
 
-## Estrutura do Projeto
+## Project Structure
 
     .
     ├── agent.py
     ├── mcp_client.py
     ├── mcp_server.py
-    ├── rag.py
-    └── requirements.txt
+    └── rag.py
 
 ------------------------------------------------------------------------
 
-## Pré-requisitos
+## Prerequisites
 
--   Python 3.10+
--   Ollama instalado
--   Modelo Mistral
+- Python 3.10+
+- Ollama installed
+- Mistral model
 
-``` bash
+```bash
 ollama pull mistral
 ```
 
-------------------------------------------------------------------------
+---
 
-## Instalação
+## Installation
 
-``` bash
+```bash
 python -m venv venv
 source venv/bin/activate
 
 pip install langchain langgraph langchain-ollama fastapi uvicorn faiss-cpu sentence-transformers requests langfuse
 ```
 
-------------------------------------------------------------------------
+---
 
-## Subindo o MCP Server
+## Starting the MCP Server
 
-``` bash
+```bash
 uvicorn mcp_server:app --reload --port 9001
 ```
 
-------------------------------------------------------------------------
+---
 
-## Executando o Agente
+## Running the Agent
 
-``` bash
+```bash
 python agent.py
 ```
 
-------------------------------------------------------------------------
+---
 
 ## RAG
 
--   Chunking de documentos\
--   Geração de embeddings\
--   Indexação com FAISS\
--   Busca semântica antes do LLM
+- Document chunking
+- Embedding generation
+- Indexing with FAISS
+- Semantic search before the LLM
 
-------------------------------------------------------------------------
+---
 
 ## MCP
 
--   Handshake com o servidor\
--   tools/list para descoberta\
--   tools/call via JSON-RPC
+- Handshake with the server
+- `tools/list` for discovery
+- `tools/call` via JSON-RPC
 
-------------------------------------------------------------------------
+---
 
-## Observabilidade com Langfuse (Local)
+## Observability with Langfuse (Local) 🔍
 
-O projeto já usa o `CallbackHandler` do Langfuse no agente.
+The project already uses Langfuse's `CallbackHandler` in the agent.
 
-### 1️⃣ Subindo o Langfuse local
+### 1️⃣ Start Langfuse locally
 
-A forma mais simples é via Docker:
+The simplest way is via Docker:
 
-``` bash
+```bash
 git clone https://github.com/langfuse/langfuse.git
 cd langfuse
 docker compose up -d
 ```
 
-Acesse:
+Access:
 
-``` text
+```
 http://localhost:3000
 ```
 
-Crie um projeto e gere:
+Create a project and generate:
 
--   Public Key\
--   Secret Key
+- Public Key
+- Secret Key
 
-------------------------------------------------------------------------
+---
 
-### 2️⃣ Configurando variáveis de ambiente
+### 2️⃣ Set environment variables
 
-No seu projeto:
+In your project:
 
-``` bash
+```bash
 export LANGFUSE_PUBLIC_KEY=pk_...
 export LANGFUSE_SECRET_KEY=sk_...
 export LANGFUSE_HOST=http://localhost:3000
 ```
 
-------------------------------------------------------------------------
+---
 
-### 3️⃣ Executando com tracing
+### 3️⃣ Run with tracing
 
-Com tudo configurado:
+With everything configured:
 
-``` bash
+```bash
 python agent.py
 ```
 
-Você poderá ver no Langfuse:
+You’ll see in Langfuse:
 
--   Cada nó do LangGraph\
--   Prompts e respostas\
--   Latência\
--   Erros e retries
+- Each LangGraph node
+- Prompts and responses
+- Latency
+- Errors and retries
 
-Langfuse transforma o agente em um sistema **debugável e observável**.
+Langfuse makes the agent **debuggable and observable**.
 
-------------------------------------------------------------------------
+---
 
-## Arquitetura
+
+## Architecture
 
 ``` mermaid
 flowchart TD
@@ -190,7 +186,7 @@ flowchart TD
         Index[(Vector Index)]
     end
 
-    ExternalAPI[(API Anúncios)]
+    ExternalAPI[(External API)]
 ```
 
 ------------------------------------------------------------------------
