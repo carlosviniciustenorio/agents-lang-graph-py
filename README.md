@@ -9,7 +9,7 @@ usando:
     ferramentas.
 -   **RAG com FAISS + SentenceTransformers**.
 -   **FastAPI** como MCP Server.
--   **LangSmith / Langfuse** para observabilidade.
+-   **Langfuse** para observabilidade local.
 
 O objetivo é sair do modelo de chatbot e entrar em **engenharia de
 agentes**, onde a IA planeja, decide, executa ações reais e valida
@@ -59,7 +59,7 @@ ollama pull mistral
 python -m venv venv
 source venv/bin/activate
 
-pip install langchain langgraph langchain-ollama fastapi uvicorn faiss-cpu sentence-transformers requests
+pip install langchain langgraph langchain-ollama fastapi uvicorn faiss-cpu sentence-transformers requests langfuse
 ```
 
 ------------------------------------------------------------------------
@@ -82,29 +82,76 @@ python agent.py
 
 ## RAG
 
--   Chunking
--   Embeddings
--   Indexação FAISS
--   Busca semântica
+-   Chunking de documentos\
+-   Geração de embeddings\
+-   Indexação com FAISS\
+-   Busca semântica antes do LLM
 
 ------------------------------------------------------------------------
 
 ## MCP
 
--   Handshake
--   tools/list
+-   Handshake com o servidor\
+-   tools/list para descoberta\
 -   tools/call via JSON-RPC
 
 ------------------------------------------------------------------------
 
-## Observabilidade com LangSmith
+## Observabilidade com Langfuse (Local)
+
+O projeto já usa o `CallbackHandler` do Langfuse no agente.
+
+### 1️⃣ Subindo o Langfuse local
+
+A forma mais simples é via Docker:
 
 ``` bash
-export LANGSMITH_TRACING=true
-export LANGSMITH_ENDPOINT=https://api.smith.langchain.com
-export LANGSMITH_API_KEY=<SUA_KEY>
-export LANGSMITH_PROJECT="IA-Agents"
+git clone https://github.com/langfuse/langfuse.git
+cd langfuse
+docker compose up -d
 ```
+
+Acesse:
+
+``` text
+http://localhost:3000
+```
+
+Crie um projeto e gere:
+
+-   Public Key\
+-   Secret Key
+
+------------------------------------------------------------------------
+
+### 2️⃣ Configurando variáveis de ambiente
+
+No seu projeto:
+
+``` bash
+export LANGFUSE_PUBLIC_KEY=pk_...
+export LANGFUSE_SECRET_KEY=sk_...
+export LANGFUSE_HOST=http://localhost:3000
+```
+
+------------------------------------------------------------------------
+
+### 3️⃣ Executando com tracing
+
+Com tudo configurado:
+
+``` bash
+python agent.py
+```
+
+Você poderá ver no Langfuse:
+
+-   Cada nó do LangGraph\
+-   Prompts e respostas\
+-   Latência\
+-   Erros e retries
+
+Langfuse transforma o agente em um sistema **debugável e observável**.
 
 ------------------------------------------------------------------------
 
